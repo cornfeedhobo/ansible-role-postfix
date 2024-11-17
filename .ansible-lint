@@ -1,0 +1,7 @@
+---
+profile: "production"
+enable_list:
+  - "galaxy-version-incorrect"
+  - "name[casing]"
+  - "name[prefix]"
+  - "yaml"

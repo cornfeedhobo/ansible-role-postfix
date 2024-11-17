@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+
+[Service]
+ExecStart=
+ExecStart={{ postfix_bin_path }} -c {{ postfix_config_dir }}/ansible-managed start

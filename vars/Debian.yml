@@ -1,0 +1,15 @@
+---
+
+__postfix_packages: ["postfix"]
+
+__postfix_bin_path: "/usr/sbin/postfix"
+
+__postfix_owner: "root"
+
+__postfix_group: "root"
+
+__postfix_ssl_dir: "{{ __postfix_config_dir }}/ssl"
+
+__postfix_service_name: "postfix"
+
+__postfix_config_dir: "/etc/postfix"

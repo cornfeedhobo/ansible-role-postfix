@@ -1,0 +1,31 @@
+---
+-
+  name: "ssl | Ensure the SSL directory exists"
+  become: true
+  ansible.builtin.file:
+    state: "directory"
+    path: "{{ postfix_ssl_dir }}"
+    owner: "{{ postfix_owner }}"
+    group: "{{ postfix_group }}"
+    mode: "0700"
+-
+  name: "ssl | Manage postfix ssl files"
+  become: true
+  no_log: true
+  ansible.builtin.copy:
+    backup: true
+    dest: "{{ postfix_ssl_dir }}/{{ item.name }}"
+    content: "{{ item.content }}"
+    owner: "{{ postfix_owner }}"
+    group: "{{ postfix_group }}"
+    mode: "0600"
+  with_items:
+    -
+      name: "{{ postfix_ssl_pair.name }}.crt"
+      content: "{{ postfix_ssl_pair.crt }}"
+    -
+      name: "{{ postfix_ssl_pair.name }}.key"
+      content: "{{ postfix_ssl_pair.key }}"
+  notify:
+    - "Validate postfix config"
+    - "Reload postfix service"

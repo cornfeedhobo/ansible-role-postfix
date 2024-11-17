@@ -1,0 +1,46 @@
+---
+-
+  name: "configure | Create ansible-managed config directory"
+  become: true
+  ansible.builtin.file:
+    state: "directory"
+    path: "{{ postfix_config_dir }}/ansible-managed"
+    owner: "{{ postfix_owner }}"
+    group: "{{ postfix_group }}"
+    mode: "0755"
+-
+  name: "configure | Create main.cf"
+  become: true
+  ansible.builtin.template:
+    backup: true
+    src: "main.cf.j2"
+    dest: "{{ postfix_config_dir }}/ansible-managed/main.cf"
+    owner: "{{ postfix_owner }}"
+    group: "{{ postfix_group }}"
+    mode: "0644"
+  notify:
+    - "Validate postfix config"
+    - "Reload postfix service"
+-
+  name: "configure | Create master.cf"
+  become: true
+  ansible.builtin.template:
+    backup: true
+    src: "master.cf.j2"
+    dest: "{{ postfix_config_dir }}/ansible-managed/master.cf"
+    owner: "{{ postfix_owner }}"
+    group: "{{ postfix_group }}"
+    mode: "0644"
+  notify:
+    - "Validate postfix config"
+    - "Reload postfix service"
+-
+  name: "configure | Manage aliases"
+  become: true
+  loop: "{{ postfix_aliases | dict2items }}"
+  ansible.builtin.lineinfile:
+    path: "/etc/aliases"
+    regexp: "^{{ item.key }}:.*$"
+    line: "{{ item.key }}:\t{{ item.value }}"
+  notify:
+    - "Reload postfix service"

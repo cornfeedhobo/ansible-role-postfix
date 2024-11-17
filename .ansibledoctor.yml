@@ -1,0 +1,4 @@
+---
+renderer:
+  force_overwrite: true
+  include_header: ".header"

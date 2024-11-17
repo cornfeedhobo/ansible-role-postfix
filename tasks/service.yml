@@ -1,0 +1,29 @@
+---
+-
+  name: "service | Create systemd override directory"
+  become: true
+  ansible.builtin.file:
+    state: "directory"
+    path: "/etc/systemd/system/postfix.service.d"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+-
+  name: "service | Write systemd override file"
+  become: true
+  ansible.builtin.template:
+    src: "service.conf.j2"
+    dest: "/etc/systemd/system/postfix.service.d/custom-config.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify:
+    - "Run daemon-reload"
+    - "Restart postfix service"
+-
+  name: "service | Manage postfix service"
+  become: true
+  ansible.builtin.service:
+    name: "{{ postfix_service_name }}"
+    state: "{{ postfix_service_state }}"
+    enabled: "{{ postfix_service_enabled }}"

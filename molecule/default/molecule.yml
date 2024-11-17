@@ -1,0 +1,47 @@
+---
+dependency:
+  name: "galaxy"
+driver:
+  name: "docker"
+platforms:
+  -
+    name: "molecule-almalinux"
+    image: "docker.io/almalinux:9"
+    commands:
+      - "dnf makecache"
+      - >-
+          dnf --assumeyes install
+          bash
+          iproute
+          python3-devel
+          sudo
+  -
+    name: "molecule-fedora"
+    image: "docker.io/fedora:41"
+    commands:
+      - "dnf makecache"
+      - >-
+          dnf --assumeyes install
+          iproute
+          python3-devel
+          python3-libdnf5
+          sudo
+  -
+    name: "molecule-ubuntu"
+    image: "docker.io/ubuntu:24.10"
+    commands:
+      - "apt update"
+      - >-
+          DEBIAN_FRONTEND=noninteractive
+          apt --assume-yes install
+          apt-utils
+      - >-
+          DEBIAN_FRONTEND=noninteractive
+          apt --assume-yes install
+          iproute2
+          python3-dev
+          sudo
+provisioner:
+  name: "ansible"
+verifier:
+  name: "ansible"

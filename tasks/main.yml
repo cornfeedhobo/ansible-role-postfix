@@ -1,0 +1,25 @@
+---
+- # This include ensures this role is only used against supported hosts
+  name: "Include OS-specific variables"
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+  tags: ["postfix", "postfix-install", "postfix-ssl", "postfix-configure", "postfix-service"]
+-
+  name: "Include install.yml"
+  when: "postfix_install"
+  ansible.builtin.import_tasks: "install.yml"
+  tags: ["postfix", "postfix-install"]
+-
+  name: "Include ssl.yml"
+  when: "postfix_ssl"
+  ansible.builtin.import_tasks: "ssl.yml"
+  tags: ["postfix", "postfix-ssl"]
+-
+  name: "Include configure.yml"
+  when: "postfix_configure"
+  ansible.builtin.import_tasks: "configure.yml"
+  tags: ["postfix", "postfix-configure"]
+-
+  name: "Include service.yml"
+  when: "postfix_service"
+  ansible.builtin.import_tasks: "service.yml"
+  tags: ["postfix", "postfix-service"]

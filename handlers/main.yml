@@ -1,0 +1,33 @@
+---
+-
+  name: "Validate postfix config"
+  become: true
+  ansible.builtin.command: "postfix check"
+  changed_when: false
+-
+  name: "Reload postfix service"
+  when:
+    - "postfix_service"
+    - "postfix_service_state == 'started'"
+  become: true
+  ansible.builtin.service:
+    name: "{{ postfix_service_name }}"
+    state: "reloaded"
+-
+  name: "Run daemon-reload"
+  when:
+    - "postfix_service"
+    - "postfix_service_state == 'started'"
+    - "ansible_service_mgr == 'systemd'"
+  become: true
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+-
+  name: "Restart postfix service"
+  when:
+    - "postfix_service"
+    - "postfix_service_state == 'started'"
+  become: true
+  ansible.builtin.service:
+    name: "{{ postfix_service_name }}"
+    state: "restarted"

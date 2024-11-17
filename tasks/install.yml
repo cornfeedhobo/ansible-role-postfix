@@ -1,0 +1,7 @@
+---
+-
+  name: "install | Manage postfix package(s)"
+  become: true
+  ansible.builtin.package:
+    name: "{{ postfix_packages | list }}"
+    state: "{{ postfix_package_state }}"

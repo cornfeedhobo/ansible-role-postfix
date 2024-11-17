@@ -1,0 +1,52 @@
+---
+-
+  name: "Verify"
+  hosts: "all"
+  tasks:
+    -
+      name: "Include role variables"
+      ansible.builtin.include_vars: "{{ item }}"
+      with_items:
+        - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/vars/{{ ansible_os_family }}.yml"
+        - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+    -
+      name: "Get the postfix package status"
+      ansible.builtin.package:
+        name: "{{ postfix_packages }}"
+      check_mode: true
+      diff: true
+      register: "_postfix_packages"
+    -
+      name: "Assert that postfix is already installed"
+      ansible.builtin.assert:
+        that:
+          - "not _postfix_packages.changed"
+    -
+      name: "Get the postfix ansible config status"
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      with_items:
+        - "{{ postfix_config_dir }}/ansible-managed/main.cf"
+        - "{{ postfix_config_dir }}/ansible-managed/master.cf"
+      register: "_postfix_config"
+    -
+      name: "Assert that postfix is configured"
+      ansible.builtin.assert:
+        that:
+          - "item.stat.exists is defined and item.stat.exists"
+      with_items: "{{ _postfix_config.results }}"
+    -
+      name: "Read the content of /etc/aliases"
+      ansible.builtin.slurp:
+        path: "/etc/aliases"
+      register: "_postfix_aliases"
+    -
+      name: "Decode to file lines"
+      ansible.builtin.set_fact:
+        _postfix_aliases_lines: "{{ _postfix_aliases.content | b64decode | split('\n') }}"
+    -
+      name: "Assert the line is present"
+      ansible.builtin.assert: # noqa: no-tabs
+        that: "'root:\tuser1, user2' in _postfix_aliases_lines"
+        fail_msg: "Alias is not present in /etc/aliases"
+        success_msg: "Alias is present in /etc/aliases"

@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ansible = "*"
+ansible-doctor = "*"
+ansible-lint = "*"
+molecule = "*"
+molecule-plugins = {extras = ["docker"], version = "*"}
+selinux-please-lie-to-me = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
